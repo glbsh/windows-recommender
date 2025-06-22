@@ -1,5 +1,5 @@
 // script.js
-// Fully integrated wizard UI with real-time user input connected to dataset filtering and result rendering.
+// Enhanced interactive wizard UI fully wired to live dataset and styled display.
 
 let models = [];
 let sortDirections = {};
@@ -49,7 +49,7 @@ function displayResults(matches) {
     const aiScore = calculateAIScore(m);
     const competitor = m.competitorModel ? `vs ${m.competitorModel}` : "-";
     tr.innerHTML = `
-      <td title="Click to learn more">${highlightMatch(m.model)}</td>
+      <td>${highlightMatch(m.model)}</td>
       <td>${highlightMatch(m.brand)}</td>
       <td>${highlightMatch(m.frame)}</td>
       <td>${highlightMatch(m.style)}</td>
