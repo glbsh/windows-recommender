@@ -1,51 +1,96 @@
-<!DOCTYPE html>
-<html lang="en">
+html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Window Replacement Finder</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <title>Window Recommender</title>
+  <link rel="stylesheet" href="style.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
+  <h1>🏡 Smart Window Recommendation Guide</h1>
   <div id="wizard">
-    <h1>Find the Perfect Window</h1>
-
     <div class="question">
-      <label>1. Do you want ENERGY STAR® certified windows?</label>
+      <h2>1. Is ENERGY STAR certification important to you?</h2>
       <div class="option-group">
-        <label><input type="radio" id="q1-energyStar-yes" name="q1-energyStar" value="yes"> Yes</label>
-        <label><input type="radio" name="q1-energyStar" value="no"> No</label>
+        <input type="radio" name="q1-energyStar" id="q1-energyStar-yes" />
+        <label for="q1-energyStar-yes">✅ Yes</label>
+
+        <input type="radio" name="q1-energyStar" id="q1-energyStar-no" />
+        <label for="q1-energyStar-no">❌ No</label>
       </div>
     </div>
 
     <div class="question">
-      <label>2. What frame material do you prefer?</label>
-      <div class="option-group" id="q2-frame-options"></div>
+      <h2>2. Choose your preferred window frame material:</h2>
+      <div class="option-group">
+        <input type="radio" name="q2-frame" id="frame-vinyl" value="Vinyl" />
+        <label for="frame-vinyl">🧪 Vinyl</label>
+
+        <input type="radio" name="q2-frame" id="frame-wood" value="Wood" />
+        <label for="frame-wood">🌳 Wood</label>
+
+        <input type="radio" name="q2-frame" id="frame-fiberglass" value="Fiberglass" />
+        <label for="frame-fiberglass">🧵 Fiberglass</label>
+
+        <input type="radio" name="q2-frame" id="frame-aluminum" value="Aluminum" />
+        <label for="frame-aluminum">🔩 Aluminum</label>
+      </div>
     </div>
 
     <div class="question">
-      <label>3. What window style are you looking for?</label>
-      <div class="option-group" id="q3-style-options"></div>
+      <h2>3. What style of window are you looking for?</h2>
+      <div class="option-group">
+        <input type="radio" name="q3-style" id="style-casement" value="Casement" />
+        <label for="style-casement">📐 Casement</label>
+
+        <input type="radio" name="q3-style" id="style-doublehung" value="Double Hung" />
+        <label for="style-doublehung">🏛 Double Hung</label>
+
+        <input type="radio" name="q3-style" id="style-slider" value="Slider" />
+        <label for="style-slider">➡️ Slider</label>
+
+        <input type="radio" name="q3-style" id="style-picture" value="Picture" />
+        <label for="style-picture">🖼 Picture</label>
+      </div>
     </div>
 
     <div class="question">
-      <label>4. What's your budget?</label>
-      <div class="option-group" id="q4-budget-options"></div>
+      <h2>4. What’s your budget range?</h2>
+      <div class="option-group">
+        <input type="radio" name="q4-budget" id="budget-low" value="Low" />
+        <label for="budget-low">💲 Low</label>
+
+        <input type="radio" name="q4-budget" id="budget-medium" value="Medium" />
+        <label for="budget-medium">💰 Medium</label>
+
+        <input type="radio" name="q4-budget" id="budget-high" value="High" />
+        <label for="budget-high">💎 High</label>
+      </div>
     </div>
 
     <div class="question">
-      <label>5. What’s your regional climate like?</label>
-      <div class="option-group" id="q5-climate-options"></div>
+      <h2>5. What’s your climate region?</h2>
+      <div class="option-group">
+        <input type="radio" name="q5-climate" id="climate-cold" value="Cold" />
+        <label for="climate-cold">❄️ Cold</label>
+
+        <input type="radio" name="q5-climate" id="climate-mixed" value="Mixed" />
+        <label for="climate-mixed">🌤 Mixed</label>
+
+        <input type="radio" name="q5-climate" id="climate-hot" value="Hot" />
+        <label for="climate-hot">🔥 Hot</label>
+
+        <input type="radio" name="q5-climate" id="climate-marine" value="Marine" />
+        <label for="climate-marine">🌊 Marine</label>
+      </div>
     </div>
 
     <div class="question">
-      <label>ZIP Code (optional):</label>
-      <input type="text" id="zip-code" placeholder="ZIP or auto-detecting...">
+      <h2>6. Zip Code (optional override)</h2>
+      <input type="text" id="zip-code" placeholder="Enter ZIP code" />
     </div>
 
-    <div id="progress" style="display:none">Finding matches...</div>
-
-    <button id="submit-btn">Find My Windows</button>
+    <button id="submit-btn">🔍 Find My Windows</button>
+    <div id="progress" style="display:none">⏳ Processing your answers...</div>
   </div>
 
   <div id="app"></div>
