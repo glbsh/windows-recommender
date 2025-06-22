@@ -90,7 +90,7 @@ const WindowReplacementGuide = () => {
     const loadWindowDatabase = async () => {
       try {
         console.log('Loading window database...');
-        const response = await fetch('https://glbsh.github.io/windows-recommender/window_replacement_dataset_20250622_001743.csv');
+        const response = await fetch('./window_replacement_dataset_20250622_001743.csv');
         if (response.ok) {
           const csvData = await response.text();
           const lines = csvData.split('\n').filter(line => line.trim());
