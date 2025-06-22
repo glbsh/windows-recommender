@@ -4,104 +4,82 @@
   <meta charset="UTF-8" />
   <title>Window Recommender</title>
   <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-  <div class="container">
-    <h1>🪟 Window Replacement Recommender</h1>
+  <header>
+    <h1>🏠 Smart Window Recommender</h1>
+    <p>Your personalized guide to the best replacement windows</p>
+  </header>
 
+  <main id="app">
     <form id="questionnaire">
-
       <div class="question">
-        <label>1. Do you prefer ENERGY STAR certified windows? <span class="tooltip" title="ENERGY STAR certification ensures energy efficiency.">❓</span></label>
+        <label>🌿 Energy Star Certified?</label>
         <div class="options">
-          <input type="radio" id="q1-energyStar-yes" name="q1-energyStar" value="yes" />
-          <label for="q1-energyStar-yes">✅ Yes</label>
-
-          <input type="radio" id="q1-energyStar-no" name="q1-energyStar" value="no" />
-          <label for="q1-energyStar-no">❌ No</label>
+          <label><input type="radio" name="q1-energyStar" id="q1-energyStar-yes" value="yes" /> Yes</label>
+          <label><input type="radio" name="q1-energyStar" value="no" /> No</label>
         </div>
       </div>
 
       <div class="question">
-        <label>2. What frame material do you prefer? (Select all that apply)</label>
+        <label>🪟 Frame Material</label>
         <div class="options">
-          <input type="checkbox" id="q2-frame-wood" name="q2-frame" value="wood" />
-          <label for="q2-frame-wood">🌲 Wood</label>
-
-          <input type="checkbox" id="q2-frame-vinyl" name="q2-frame" value="vinyl" />
-          <label for="q2-frame-vinyl">🧱 Vinyl</label>
-
-          <input type="checkbox" id="q2-frame-fiberglass" name="q2-frame" value="fiberglass" />
-          <label for="q2-frame-fiberglass">🔧 Fiberglass</label>
-
-          <input type="checkbox" id="q2-frame-composite" name="q2-frame" value="composite" />
-          <label for="q2-frame-composite">🧪 Composite</label>
-
-          <input type="checkbox" id="q2-frame-aluminum" name="q2-frame" value="aluminum" />
-          <label for="q2-frame-aluminum">🪙 Aluminum</label>
+          <label><input type="checkbox" name="q2-frame" value="vinyl" /> Vinyl</label>
+          <label><input type="checkbox" name="q2-frame" value="wood" /> Wood</label>
+          <label><input type="checkbox" name="q2-frame" value="fiberglass" /> Fiberglass</label>
+          <label><input type="checkbox" name="q2-frame" value="composite" /> Composite</label>
+          <label><input type="checkbox" name="q2-frame" value="aluminum" /> Aluminum</label>
         </div>
       </div>
 
       <div class="question">
-        <label>3. What window style do you like most? (Select all that apply)</label>
+        <label>🪟 Style</label>
         <div class="options">
-          <input type="checkbox" id="q3-style-casement" name="q3-style" value="casement" />
-          <label for="q3-style-casement">📐 Casement</label>
-
-          <input type="checkbox" id="q3-style-double" name="q3-style" value="double hung" />
-          <label for="q3-style-double">🪟 Double Hung</label>
-
-          <input type="checkbox" id="q3-style-slider" name="q3-style" value="slider" />
-          <label for="q3-style-slider">➡️ Slider</label>
-
-          <input type="checkbox" id="q3-style-picture" name="q3-style" value="picture" />
-          <label for="q3-style-picture">🖼️ Picture</label>
+          <label><input type="checkbox" name="q3-style" value="double hung" /> Double Hung</label>
+          <label><input type="checkbox" name="q3-style" value="casement" /> Casement</label>
+          <label><input type="checkbox" name="q3-style" value="slider" /> Slider</label>
+          <label><input type="checkbox" name="q3-style" value="awning" /> Awning</label>
+          <label><input type="checkbox" name="q3-style" value="bay" /> Bay</label>
+          <label><input type="checkbox" name="q3-style" value="bow" /> Bow</label>
         </div>
       </div>
 
       <div class="question">
-        <label>4. What is your budget range?</label>
+        <label>💰 Budget</label>
         <div class="options">
-          <input type="radio" id="q4-budget-low" name="q4-budget" value="low" />
-          <label for="q4-budget-low">💲 Low</label>
-
-          <input type="radio" id="q4-budget-mid" name="q4-budget" value="mid" />
-          <label for="q4-budget-mid">💰 Mid</label>
-
-          <input type="radio" id="q4-budget-high" name="q4-budget" value="high" />
-          <label for="q4-budget-high">💎 High</label>
+          <label><input type="radio" name="q4-budget" value="economy" /> Economy</label>
+          <label><input type="radio" name="q4-budget" value="midrange" /> Midrange</label>
+          <label><input type="radio" name="q4-budget" value="premium" /> Premium</label>
         </div>
       </div>
 
       <div class="question">
-        <label>5. What's your regional climate?</label>
+        <label>🌦️ Climate Zone</label>
         <div class="options">
-          <input type="radio" id="q5-climate-cold" name="q5-climate" value="cold" />
-          <label for="q5-climate-cold">❄️ Cold</label>
-
-          <input type="radio" id="q5-climate-temperate" name="q5-climate" value="temperate" />
-          <label for="q5-climate-temperate">🌤️ Temperate</label>
-
-          <input type="radio" id="q5-climate-hot" name="q5-climate" value="hot" />
-          <label for="q5-climate-hot">🔥 Hot</label>
+          <label><input type="radio" name="q5-climate" value="cold" /> Cold</label>
+          <label><input type="radio" name="q5-climate" value="hot" /> Hot</label>
+          <label><input type="radio" name="q5-climate" value="mixed" /> Mixed</label>
+          <label><input type="radio" name="q5-climate" value="humid" /> Humid</label>
+          <label><input type="radio" name="q5-climate" value="dry" /> Dry</label>
         </div>
       </div>
 
       <div class="question">
-        <label>ZIP Code (optional):</label>
-        <input type="text" id="zip-code" placeholder="Auto-detecting ZIP..." />
+        <label for="zip-code">📍 ZIP Code (autodetected)</label>
+        <input type="text" id="zip-code" placeholder="ZIP" />
       </div>
 
-      <div class="submit">
-        <button id="submit-btn" type="button">Get Recommendations ➡️</button>
-        <div id="progress" style="display:none;">🔄 Matching your preferences...</div>
-      </div>
+      <button type="button" id="submit-btn">🎯 Show My Recommendations</button>
     </form>
 
-    <div id="app"></div>
-  </div>
+    <div id="progress" style="display: none;">🔍 Processing...</div>
+  </main>
+
+  <footer>
+    <p>© 2025 Window Recommender</p>
+  </footer>
 
   <script src="script.js"></script>
-  <script src="https://raw.githack.com/eKoopmans/html2pdf/master/dist/html2pdf.bundle.js"></script>
 </body>
 </html>
