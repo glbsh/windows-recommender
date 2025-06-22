@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Window Recommender</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+  <header>
+    <h1>🏠 Smart Window Recommender</h1>
+    <p>Your personalized guide to the best replacement windows</p>
+  </header>
+
+  <main id="app">
+    <form id="questionnaire">
+      <div class="question">
+        <label>🌿 Energy Star Certified?</label>
+        <div class="options">
+          <label><input type="radio" name="q1-energyStar" id="q1-energyStar-yes" value="yes" /> Yes</label>
+          <label><input type="radio" name="q1-energyStar" value="no" /> No</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>🪟 Frame Material</label>
+        <div class="options">
+          <label><input type="checkbox" name="q2-frame" value="vinyl" /> Vinyl</label>
+          <label><input type="checkbox" name="q2-frame" value="wood" /> Wood</label>
+          <label><input type="checkbox" name="q2-frame" value="fiberglass" /> Fiberglass</label>
+          <label><input type="checkbox" name="q2-frame" value="composite" /> Composite</label>
+          <label><input type="checkbox" name="q2-frame" value="aluminum" /> Aluminum</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>🪟 Style</label>
+        <div class="options">
+          <label><input type="checkbox" name="q3-style" value="double hung" /> Double Hung</label>
+          <label><input type="checkbox" name="q3-style" value="casement" /> Casement</label>
+          <label><input type="checkbox" name="q3-style" value="slider" /> Slider</label>
+          <label><input type="checkbox" name="q3-style" value="awning" /> Awning</label>
+          <label><input type="checkbox" name="q3-style" value="bay" /> Bay</label>
+          <label><input type="checkbox" name="q3-style" value="bow" /> Bow</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>💰 Budget</label>
+        <div class="options">
+          <label><input type="radio" name="q4-budget" value="economy" /> Economy</label>
+          <label><input type="radio" name="q4-budget" value="midrange" /> Midrange</label>
+          <label><input type="radio" name="q4-budget" value="premium" /> Premium</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label>🌦️ Climate Zone</label>
+        <div class="options">
+          <label><input type="radio" name="q5-climate" value="cold" /> Cold</label>
+          <label><input type="radio" name="q5-climate" value="hot" /> Hot</label>
+          <label><input type="radio" name="q5-climate" value="mixed" /> Mixed</label>
+          <label><input type="radio" name="q5-climate" value="humid" /> Humid</label>
+          <label><input type="radio" name="q5-climate" value="dry" /> Dry</label>
+        </div>
+      </div>
+
+      <div class="question">
+        <label for="zip-code">📍 ZIP Code (autodetected)</label>
+        <input type="text" id="zip-code" placeholder="ZIP" />
+      </div>
+
+      <button type="button" id="submit-btn">🎯 Show My Recommendations</button>
+    </form>
+
+    <div id="progress" style="display: none;">🔍 Processing...</div>
+  </main>
+
+  <footer>
+    <p>© 2025 Window Recommender</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
