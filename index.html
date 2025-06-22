@@ -3,13 +3,12 @@
 <head>
   <title>Window Selector</title>
   <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <script defer src="script.js"></script>
   <style>
     body { font-family: sans-serif; margin: 2rem; }
     table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
     th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
     th { background-color: #eee; }
-    input, button { margin-right: 0.5rem; padding: 0.4rem; }
+    input, button, select { margin: 0.5rem 0; padding: 0.4rem; display: block; }
   </style>
 </head>
 <body>
@@ -37,8 +36,72 @@
             warranty: row.Warranty
           }));
 
+          const app = document.getElementById("app");
+          let answers = {};
+
+          const questions = [
+            {
+              key: "climate",
+              label: "What's your climate?",
+              options: ["cold", "hot", "rainy", "mixed"]
+            },
+            {
+              key: "style",
+              label: "Preferred window style?",
+              options: ["casement", "sliding", "double-hung", "awning", "picture", "any"]
+            },
+            {
+              key: "material",
+              label: "Preferred frame material?",
+              options: ["vinyl", "wood", "fiberglass", "recommend"]
+            },
+            {
+              key: "budget",
+              label: "What's your budget tier?",
+              options: ["any"]
+            },
+            {
+              key: "features",
+              label: "Which features matter most? (Ctrl+Click to select multiple)",
+              options: ["energy", "sound", "warranty"],
+              multi: true
+            }
+          ];
+
+          let current = 0;
+
+          function askNext() {
+            app.innerHTML = "";
+            if (current >= questions.length) {
+              showResults();
+              return;
+            }
+
+            const q = questions[current];
+            const label = document.createElement("label");
+            label.textContent = q.label;
+            const select = document.createElement("select");
+            if (q.multi) select.multiple = true;
+            q.options.forEach(opt => {
+              const o = document.createElement("option");
+              o.value = opt;
+              o.textContent = opt;
+              select.appendChild(o);
+            });
+            const btn = document.createElement("button");
+            btn.textContent = "Next";
+            btn.onclick = () => {
+              answers[q.key] = q.multi ? Array.from(select.selectedOptions).map(o => o.value) : select.value;
+              current++;
+              askNext();
+            };
+            app.appendChild(label);
+            app.appendChild(select);
+            app.appendChild(btn);
+          }
+
           function getRecommendations(answers) {
-            const climate = answers.autoClimate || answers.climate;
+            const climate = answers.climate;
             return windowDatabase
               .filter(w => w.climates.includes(climate))
               .filter(w => w.style.includes(answers.style) || answers.style === 'any')
@@ -49,31 +112,13 @@
               .slice(0, 5);
           }
 
-          function renderComparisonTable(models) {
+          function showResults() {
+            const models = getRecommendations(answers);
             const container = document.createElement('div');
-            const filter = document.createElement('input');
-            filter.placeholder = "Search brand or frame...";
-            filter.oninput = () => {
-              const rows = container.querySelectorAll("tbody tr");
-              rows.forEach(row => {
-                row.style.display = row.textContent.toLowerCase().includes(filter.value.toLowerCase()) ? "" : "none";
-              });
-            };
-            container.appendChild(filter);
-
             const table = document.createElement('table');
             table.innerHTML = `
               <thead>
-                <tr>
-                  <th>Brand</th>
-                  <th>Series</th>
-                  <th>Model</th>
-                  <th>Frame</th>
-                  <th>Styles</th>
-                  <th>U-Factor</th>
-                  <th>STC</th>
-                  <th>Warranty</th>
-                </tr>
+                <tr><th>Brand</th><th>Series</th><th>Model</th><th>Frame</th><th>Styles</th><th>U-Factor</th><th>STC</th><th>Warranty</th></tr>
               </thead>
               <tbody>
                 ${models.map(m => `
@@ -87,25 +132,13 @@
                     <td>${m.stc}</td>
                     <td>${m.warranty}</td>
                   </tr>`).join('')}
-              </tbody>
-            `;
+              </tbody>`;
             container.appendChild(table);
-            return container;
+            app.innerHTML = "<h2>Top Recommendations</h2>";
+            app.appendChild(container);
           }
 
-          const sampleAnswers = {
-            climate: "cold",
-            style: "casement",
-            material: "fiberglass",
-            budget: "any",
-            features: ["energy", "sound"]
-          };
-
-          const models = getRecommendations(sampleAnswers);
-          const ui = renderComparisonTable(models);
-          const app = document.getElementById("app");
-          app.innerHTML = "";
-          app.appendChild(ui);
+          askNext();
         }
       });
     });
