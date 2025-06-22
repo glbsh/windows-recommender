@@ -3,5 +3,443 @@
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Window Selector</title>
-  ... (content truncated for brevity) ...
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js">
+    let currentSortKey = null;
+let currentSortDirection = 'asc';
+    function sortResults(key) {
+  if (currentSortKey === key) {
+    windowDatabase.reverse();
+    currentSortDirection = currentSortDirection === 'asc' ? 'desc' : 'asc';
+  } else {
+    currentSortKey = key;
+    currentSortDirection = 'asc';
+    windowDatabase.sort((a, b) => {
+      if (typeof a[key] === 'number') return a[key] - b[key];
+      return ('' + a[key]).localeCompare(b[key]);
+    });
+  }
+  showResults();
+} else {
+    currentSortKey = key;
+    windowDatabase.sort((a, b) => {
+      if (typeof a[key] === 'number') return a[key] - b[key];
+      return ('' + a[key]).localeCompare(b[key]);
+    });
+  }
+  showResults();
+}
+</script>
+  <style>
+@media (max-width: 768px) {
+  body {
+    margin: 1rem;
+  }
+  button {
+    width: 100%;
+  }
+  table, th, td {
+    font-size: 0.875rem;
+  }
+}
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+body {
+  font-family: 'Inter', sans-serif;
+  background: linear-gradient(135deg, #f0f4f8, #ffffff);
+  color: #212529;
+  margin: 2rem;
+  line-height: 1.6;
+}
+
+button {
+  background-color: #0d6efd;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  padding: 1rem;
+  font-size: 1rem;
+  border-radius: 12px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+}
+
+button:hover {
+  transform: scale(1.03);
+  background-color: #025ce2;
+}
+
+button:hover {
+  background-color: #0056b3;
+}
+
+.question-count {
+  margin-bottom: 1rem;
+  font-size: 1rem;
+  color: #495057;
+  font-weight: bold;
+}
+
+.option-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.option-label img {
+  width: 20px;
+  height: 20px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 1rem;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+th, td {
+  border: 1px solid #ccc;
+  padding: 0.75rem;
+  text-align: left;
+}
+
+th {
+  background-color: #e9ecef;
+  font-weight: bold;
+}
+</style>
+</head>
+<body>
+  <h1 style='font-size: 2rem; color: #343a40;'>🏡 Smart Window Selector</h1>
+  <label for="zip">Enter your ZIP Code:</label>
+  <input id="zip" type="text" maxlength="5" pattern="\d{5}" placeholder="e.g. 98101" style="padding: 0.5rem; font-size: 1rem; margin-bottom: 1rem;">
+  <button id="zipBtn">Submit</button>
+  <div id="app">Loading...</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+  const zipBtn = document.getElementById("zipBtn");
+  zipBtn.addEventListener("click", () => {
+    const zip = document.getElementById("zip").value;
+    const climate = zipToClimate(zip);
+    if (climate) {
+      window.userClimate = climate;
+      document.getElementById("zip").style.display = "none";
+      zipBtn.style.display = "none";
+      initApp();
+    } else {
+      alert("Invalid ZIP or climate zone not found.");
+    }
+  });
+      function initApp() {
+Papa.parse("https://glbsh.github.io/windows-recommender/verified_window_models.csv", {
+  header: true,
+  download: true,
+  complete: function(results) {
+    const verifiedData = results.data.filter(r => r.Brand && r.Series && r.Model);
+    const windowDatabase = verifiedData.map(row => ({
+      brand: row.Brand.trim(),
+      series: row.Series.trim(),
+      model: row.Model.trim(),
+      frame: row.Frame?.trim().toLowerCase(),
+      style: [...new Set((row.Styles || '').split(',').map(s => s.trim().toLowerCase()))],
+      climates: ["cold", "hot", "rainy", "mixed"],
+      features: [
+        ...(parseFloat(row["U-Factor"]) <= 0.30 ? ["energy"] : []),
+        ...(parseInt(row.STC) >= 33 ? ["sound"] : []),
+        ...(row.Warranty?.toLowerCase().includes("life") ? ["warranty"] : [])
+      ],
+      uFactor: parseFloat(row["U-Factor"]),
+      stc: parseInt(row.STC),
+      warranty: row.Warranty?.trim()
+    })).filter(m => !isNaN(m.uFactor) && !isNaN(m.stc));
+
+          const windowDatabase = verifiedData.map(row => ({
+  brand: row.Brand.trim(),
+  series: row.Series.trim(),
+  model: row.Model.trim(),
+  frame: row.Frame?.trim().toLowerCase(),
+  style: [...new Set((row.Styles || '').split(',').map(s => s.trim().toLowerCase()))],
+  climates: ["cold", "hot", "rainy", "mixed"],
+  features: [
+    ...(parseFloat(row["U-Factor"]) <= 0.30 ? ["energy"] : []),
+    ...(parseInt(row.STC) >= 33 ? ["sound"] : []),
+    ...(row.Warranty?.toLowerCase().includes("life") ? ["warranty"] : [])
+  ],
+  uFactor: parseFloat(row["U-Factor"]),
+  stc: parseInt(row.STC),
+  warranty: row.Warranty?.trim()
+})).filter(m => !isNaN(m.uFactor) && !isNaN(m.stc));
+
+          const app = document.getElementById("app");
+          let answers = {};
+
+          const questions = [
+            {
+              key: "price",
+              label: "Enter your max window budget (USD):",
+              type: "input"
+            },
+            {
+              key: "climate",
+              label: "Detected climate: " + window.userClimate,
+              options: [window.userClimate],
+              readonly: true
+            },
+            {
+              key: "climate",
+              label: "What climate do you live in?",
+              options: ["❄️ Cold", "🔥 Hot", "🌧️ Rainy", "🌤️ Mixed"]
+            },
+            {
+              key: "style",
+              label: "Preferred window style:",
+              options: ["🖼️ Picture", "↔️ Sliding", "📐 Casement", "🪟 Awning", "⬆️ Double-Hung", "Any"]
+            },
+            {
+              key: "material",
+              label: "Preferred frame material:",
+              options: ["🪵 Wood", "🧱 Vinyl", "💪 Fiberglass", "🔩 Aluminum", "Recommend for me"]
+            },
+            {
+              key: "budget",
+              label: "What is your budget tier?",
+              options: ["💲 Low", "💰 Mid", "💎 High", "Any"]
+            },
+            {
+              key: "features",
+              label: "Which features matter most? (Ctrl+Click to select multiple)",
+              options: ["⚡ Energy Efficient", "🔇 Soundproof", "🛡️ Lifetime Warranty"],
+              multi: true
+            }
+          ];
+
+          let current = 0;
+
+          function zipToClimate(zip) {
+  const zipInt = parseInt(zip);
+  if (zipInt >= 90000) return "hot";
+  if (zipInt >= 70000) return "mixed";
+  if (zipInt >= 50000) return "rainy";
+  if (zipInt >= 10000) return "cold";
+  return null;
+}
+
+function askNext() {
+  app.innerHTML = "";
+  if (questions[current].readonly) {
+    answers[questions[current].key] = questions[current].options[0].toLowerCase().trim();
+    current++;
+    askNext();
+    return;
+  }
+
+  if (current >= questions.length) {
+    showResults();
+    return;
+  }
+
+  const q = questions[current];
+  const count = document.createElement("div");
+  count.className = "question-count";
+  count.textContent = `Question ${current + 1} of ${questions.length}`;
+
+  const label = document.createElement("label");
+  label.textContent = q.label;
+
+  const optionsContainer = document.createElement("div");
+  optionsContainer.style.display = "flex";
+  optionsContainer.style.flexWrap = "wrap";
+  optionsContainer.style.gap = "1rem";
+  optionsContainer.style.marginTop = "1rem";
+
+  const selected = q.multi ? new Set() : { value: null };
+
+  if (q.type === "input") {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.placeholder = "e.g. 800";
+    input.style.padding = "0.5rem";
+    input.style.fontSize = "1rem";
+    input.style.width = "200px";
+    input.addEventListener("input", () => {
+      selected.value = input.value;
+    });
+    optionsContainer.appendChild(input);
+  } else {
+    q.options.forEach(opt => {
+      const btn = document.createElement("button");
+      btn.textContent = opt;
+      btn.style.padding = "1rem";
+      btn.style.fontSize = "1rem";
+      btn.style.flex = "1 1 auto";
+      btn.style.borderRadius = "8px";
+      btn.style.border = "1px solid #ccc";
+      btn.style.background = "white";
+      btn.style.cursor = "pointer";
+
+      btn.onclick = () => {
+        if (q.multi) {
+          if (selected.has(opt)) {
+            selected.delete(opt);
+            btn.style.background = "white";
+          } else {
+            selected.add(opt);
+            btn.style.background = "#cce5ff";
+          }
+        } else {
+          selected.value = opt;
+          askNextQuestion();
+        }
+      };
+      optionsContainer.appendChild(btn);
+    });
+  }
+
+  const nextBtn = document.createElement("button");
+  nextBtn.textContent = "Next";
+  nextBtn.style.marginTop = "1rem";
+  nextBtn.onclick = () => {
+    answers[q.key] = q.multi ? Array.from(selected).map(o => o.toLowerCase().trim()) : selected.value.toLowerCase().trim();
+    current++;
+    askNext();
+  };
+
+  function askNextQuestion() {
+    answers[q.key] = selected.value.toLowerCase().trim();
+    current++;
+    askNext();
+  }
+
+  count.innerHTML += '<progress value="' + (current+1) + '" max="' + questions.length + '" style="width:100%; height:1rem; margin-top:0.5rem;"></progress>';
+  app.appendChild(count);
+  app.appendChild(label);
+  app.appendChild(optionsContainer);
+  if (q.multi) app.appendChild(nextBtn);
+}
+          }
+
+          function getRecommendations(answers) {
+            const climate = answers.climate;
+            const maxPrice = parseFloat(answers.price);
+            const seen = new Set();
+            return windowDatabase
+              .filter(w => w.climates.includes(climate))
+              .filter(w => answers.style === 'any' || w.style.includes(answers.style))
+              .filter(w => answers.material === 'recommendforme' || w.frame === answers.material)
+              .filter(w => isNaN(maxPrice) || parseFloat(w.price || 0) <= maxPrice)
+              .filter(w => (answers.features || []).every(f => w.features.includes(f)))
+              .filter(w => {
+                const key = `${w.brand}-${w.series}-${w.model}`;
+                if (seen.has(key)) return false;
+                seen.add(key);
+                return true;
+              })
+              .sort((a, b) => b.stc - a.stc)
+              .slice(0, 5);
+          }
+
+          function showResults() {
+            const models = getRecommendations(answers);
+            const container = document.createElement('div');
+            if (models.length === 0) {
+  app.innerHTML = '<p style="color: red; font-weight: bold;">No matching models found. Please try again with different preferences.</p>';
+  return;
+}
+            const table = document.createElement('table');
+            table.className = 'recommend-table';
+            table.innerHTML = `
+              <thead>
+                <tr>
+                  <th><button onclick="sortResults('brand')">Brand</button></th>
+                  <th><button onclick="sortResults('series')">Series</button></th>
+                  <th><button onclick="sortResults('model')">Model</button></th>
+                  <th><button onclick="sortResults('frame')">Frame</button></th>
+                  <th><button onclick="sortResults('style')">Styles</button></th>
+                  <th><button onclick="sortResults('uFactor')">U-Factor</button></th>
+                  <th><button onclick="sortResults('stc')">STC</button></th>
+                  <th><button onclick="sortResults('warranty')">Warranty</button></th>
+                  <th>Image</th>
+                </tr>
+                  <th><button onclick="sortResults('brand')">Brand</button></th>
+                  <th><button onclick="sortResults('series')">Series</button></th>
+                  <th><button onclick="sortResults('model')">Model</button></th>
+                  <th><button onclick="sortResults('frame')">Frame</button></th>
+                  <th><button onclick="sortResults('style')">Styles</button></th>
+                  <th><button onclick="sortResults('uFactor')">U-Factor</button></th>
+                  <th><button onclick="sortResults('stc')">STC</button></th>
+                  <th><button onclick="sortResults('warranty')">Warranty</button></th>
+                  <th>Image</th>
+                </tr>
+              </thead>
+                <tr><th>Brand</th><th>Series</th><th>Model</th><th>Frame</th><th>Styles</th><th>U-Factor</th><th>STC</th><th>Warranty</th><th>Image</th></tr>
+                <tr><th>Brand</th><th>Series</th><th>Model</th><th>Frame</th><th>Styles</th><th>U-Factor</th><th>STC</th><th>Warranty</th></tr>
+              </thead>
+              <tbody>
+                ${models.map((m, i) => `
+                  <tr style='background-color: ${i === 0 ? "#e0f7fa" : "white"};'>
+                  <td>${m.brand}</td>
+                    <td>${m.series}</td>
+                    <td>${m.model}</td>
+                    <td>${m.frame}</td>
+                    <td>${m.style.join(", ")}</td>
+                    <td>${m.uFactor}</td>
+                    <td>${m.stc}</td>
+                    $1<td><img src='https://source.unsplash.com/60x40/?window,home&sig=${i}' alt='Window model image'><br><a href="https://www.google.com/search?q=${encodeURIComponent(m.brand + ' ' + m.series + ' ' + m.model + ' window reviews')}" target="_blank">🔗 Reviews</a><br>⭐️⭐️⭐️⭐️☆</td>
+                  </tr>`).join('')}
+              </tbody>`;
+            container.appendChild(table);
+            app.innerHTML = "<h2>🌟 Top Recommendations</h2><p style='color: green;'>Sorted by your preferences. Best match highlighted.</p>";
+            app.appendChild(container);
+
+// Add export buttons
+const exportContainer = document.createElement('div');
+exportContainer.style.marginTop = '1rem';
+
+const downloadCSV = document.createElement('button');
+downloadCSV.textContent = '⬇️ Download CSV';
+downloadCSV.onclick = () => {
+  const csv = ['Brand,Series,Model,Frame,Styles,U-Factor,STC,Warranty'];
+  models.forEach(m => {
+    csv.push(`${m.brand},${m.series},${m.model},${m.frame},"${m.style.join('; ')}",${m.uFactor},${m.stc},${m.warranty}`);
+  });
+  const blob = new Blob([csv.join('
+')], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = 'recommendations.csv';
+  link.click();
+};
+
+exportContainer.appendChild(downloadCSV);
+
+const downloadPDF = document.createElement('button');
+downloadPDF.textContent = '⬇️ Download PDF';
+downloadPDF.style.marginLeft = '1rem';
+downloadPDF.onclick = () => {
+  import('https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js').then(jsPDFModule => {
+    const { jsPDF } = jsPDFModule;
+    const doc = new jsPDF();
+    doc.setFontSize(12);
+    doc.text('Window Recommendations', 10, 10);
+    const headers = ['Brand', 'Series', 'Model', 'Frame', 'Styles', 'U-Factor', 'STC', 'Warranty'];
+    const rows = models.map(m => [
+      m.brand, m.series, m.model, m.frame, m.style.join('; '), m.uFactor.toString(), m.stc.toString(), m.warranty
+    ]);
+    doc.autoTable({ head: [headers], body: rows, startY: 20 });
+    doc.save('recommendations.pdf');
+  });
+};
+
+exportContainer.appendChild(downloadPDF);
+app.appendChild(exportContainer);
+          }
+
+          askNext();
+        }
+      });
+    });
+  </script>
+</body>
 </html>
