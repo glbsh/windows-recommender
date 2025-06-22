@@ -1,13 +1,51 @@
 <!DOCTYPE html>
-<!-- Placeholder HTML for final bundle -->
-<html>
+<html lang="en">
 <head>
-  <title>Window Recommender</title>
-  <link rel="stylesheet" href="style.css">
-  <link rel="icon" href="data:,">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Window Replacement Recommender</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+  <h1>🔍 Window Replacement Recommender</h1>
+
+  <div id="wizard">
+    <p><strong>1. Do you want Energy Star certified windows?</strong></p>
+    <label><input type="radio" name="q1-energyStar" id="q1-energyStar-yes" /> Yes</label>
+    <label><input type="radio" name="q1-energyStar" /> No preference</label>
+
+    <p><strong>2. Preferred Frame Material:</strong></p>
+    <label><input type="radio" name="q2-frame" value="Vinyl" /> Vinyl</label>
+    <label><input type="radio" name="q2-frame" value="Fiberglass" /> Fiberglass</label>
+    <label><input type="radio" name="q2-frame" value="Wood" /> Wood</label>
+    <label><input type="radio" name="q2-frame" value="Composite" /> Composite</label>
+
+    <p><strong>3. Preferred Style:</strong></p>
+    <label><input type="radio" name="q3-style" value="Double-Hung" /> Double-Hung</label>
+    <label><input type="radio" name="q3-style" value="Casement" /> Casement</label>
+    <label><input type="radio" name="q3-style" value="Sliding" /> Sliding</label>
+    <label><input type="radio" name="q3-style" value="Awning" /> Awning</label>
+
+    <p><strong>4. Your Budget:</strong></p>
+    <label><input type="radio" name="q4-budget" value="Economy" /> Economy</label>
+    <label><input type="radio" name="q4-budget" value="Mid-Range" /> Mid-Range</label>
+    <label><input type="radio" name="q4-budget" value="Premium" /> Premium</label>
+
+    <p><strong>5. Your Climate Zone:</strong></p>
+    <label><input type="radio" name="q5-climate" value="Cold" /> Cold</label>
+    <label><input type="radio" name="q5-climate" value="Mixed" /> Mixed</label>
+    <label><input type="radio" name="q5-climate" value="Hot" /> Hot</label>
+    <label><input type="radio" name="q5-climate" value="Humid" /> Humid</label>
+
+    <p><strong>Your ZIP Code:</strong> <input type="text" id="zip-code" placeholder="ZIP code or auto-detecting..." /></p>
+
+    <button id="submit-btn">🔎 Find My Matches</button>
+    <div id="progress" style="display:none">🔄 Processing...</div>
+  </div>
+
   <div id="app"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
