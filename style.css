@@ -1,111 +1,111 @@
+/* style.css - Polished UI Styles */
+
 body {
-  font-family: 'Segoe UI', Tahoma, sans-serif;
-  background: #f4f7f9;
+  font-family: 'Segoe UI', sans-serif;
+  background: #f7f9fc;
   color: #333;
   margin: 0;
-  padding: 2rem;
+  padding: 20px;
 }
 
-h1, h2 {
+h1, h2, h3 {
   text-align: center;
-  color: #2a4d69;
+  color: #2c3e50;
 }
 
-#wizard, #app {
-  max-width: 960px;
-  margin: 2rem auto;
+#app {
+  max-width: 1200px;
+  margin: auto;
+  padding: 20px;
   background: #fff;
-  padding: 2rem;
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.question {
-  margin-bottom: 1.5rem;
-}
-
-.option-group {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  margin-top: 0.5rem;
-}
-
-.option-group label {
-  background: #e8f1f8;
-  padding: 0.75rem 1.5rem;
-  border-radius: 30px;
-  cursor: pointer;
-  border: 2px solid transparent;
-  transition: all 0.2s ease-in-out;
-}
-
-.option-group input[type="radio"] {
-  display: none;
-}
-
-.option-group input[type="radio"]:checked + label,
-.option-group label:hover {
-  background: #2a4d69;
-  color: #fff;
-  border-color: #1e3a52;
+  box-shadow: 0 0 12px rgba(0,0,0,0.05);
 }
 
 button {
-  background: #2a4d69;
+  background-color: #4CAF50;
   color: white;
-  padding: 0.75rem 2rem;
+  padding: 10px 20px;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-size: 1rem;
-  display: block;
-  margin: 2rem auto;
-  transition: background 0.3s ease;
+  font-size: 1em;
+  margin: 10px 5px;
 }
 
 button:hover {
-  background: #1e3a52;
+  background-color: #45a049;
 }
 
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-top: 2rem;
-}
-
-th, td {
-  padding: 0.75rem;
-  text-align: left;
-  border-bottom: 1px solid #ddd;
-}
-
-th {
-  background: #eef3f7;
-  cursor: pointer;
-  position: sticky;
-  top: 0;
-  z-index: 1;
-}
-
-tr:hover {
-  background-color: #f1f9ff;
+input[type="checkbox"], input[type="radio"] {
+  margin-right: 8px;
 }
 
 .highlight {
-  font-weight: 600;
+  font-weight: bold;
+}
+
+label {
+  margin-right: 12px;
+  display: inline-block;
+  padding: 10px;
+  border-radius: 8px;
+  background: #e3eaf2;
+  cursor: pointer;
+}
+
+label:hover {
+  background: #d6e2f0;
+}
+
+input[type="checkbox"]:checked + label,
+input[type="radio"]:checked + label {
+  background: #b4d4f0;
+  font-weight: bold;
+}
+
+#resultsTable {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  font-size: 0.95em;
+}
+
+#resultsTable th, #resultsTable td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+}
+
+#resultsTable th {
+  background-color: #f2f2f2;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  cursor: pointer;
+}
+
+#resultsTable tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+#resultsTable tr:hover {
+  background-color: #e6f7ff;
 }
 
 #progress {
   text-align: center;
+  padding: 10px;
   font-style: italic;
-  margin-top: 1rem;
-  color: #555;
+  display: none;
 }
 
-td button {
-  border: none;
-  background: transparent;
-  font-size: 1.25rem;
-  cursor: pointer;
+@media print {
+  body, #app {
+    background: white;
+    box-shadow: none;
+  }
+  button, input, label, #progress {
+    display: none;
+  }
 }
