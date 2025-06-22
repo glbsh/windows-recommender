@@ -1,0 +1,13 @@
+/* Basic CSS will be filled with polish */
+body {
+  font-family: sans-serif;
+  padding: 20px;
+  background: #f8f9fa;
+  color: #333;
+}
+button {
+  padding: 10px 16px;
+  font-size: 16px;
+  margin: 5px;
+}
+.highlight { background-color: #ffffcc; }
