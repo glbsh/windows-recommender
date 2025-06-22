@@ -76,11 +76,14 @@ const WindowReplacementGuide = () => {
           console.log('Detected location:', detectedLocation);
           setUserLocation(detectedLocation);
           updateLocation(detectedLocation);
+        } else {
+          setUserLocation('New York, NY');
+          updateLocation('New York, NY');
         }
       } catch (error) {
         console.log('Location detection failed:', error);
-        setUserLocation('');
-        setClimateZone('');
+        setUserLocation('New York, NY');
+        updateLocation('New York, NY');
       }
     };
     detectLocation();
@@ -90,22 +93,22 @@ const WindowReplacementGuide = () => {
     const loadWindowDatabase = async () => {
       try {
         console.log('Loading window database...');
-        const response = await fetch('./window_replacement_dataset_20250622_001743.csv');
+        const response = await fetch('https://glbsh.github.io/windows-recommender/window_replacement_dataset_20250622_001743.csv');
         if (response.ok) {
           const csvData = await response.text();
           const lines = csvData.split('\n').filter(line => line.trim());
           const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
           console.log('CSV Headers:', headers);
-          
+
           const windows = [];
           for (let i = 1; i < lines.length; i++) {
             const line = lines[i].trim();
             if (!line) continue;
-            
+
             const values = [];
             let current = '';
             let inQuotes = false;
-            
+
             for (let j = 0; j < line.length; j++) {
               const char = line[j];
               if (char === '"') {
@@ -118,7 +121,7 @@ const WindowReplacementGuide = () => {
               }
             }
             values.push(current.trim().replace(/^"|"$/g, ''));
-            
+
             const window = {};
             headers.forEach((header, index) => {
               const value = values[index] || '';
@@ -130,12 +133,12 @@ const WindowReplacementGuide = () => {
                 window[header] = value;
               }
             });
-            
+
             if (window.brand && window.windowType && window.priceRangeLow) {
               windows.push(window);
             }
           }
-          
+
           console.log(`Loaded ${windows.length} windows from CSV`);
           setWindowDatabase(windows);
         } else {
@@ -239,7 +242,7 @@ const WindowReplacementGuide = () => {
       const current = prev[questionId] || [];
       const question = questions.find(q => q.id === questionId);
       if (question?.type === 'checkbox') {
-        const newValue = current.includes(value) 
+        const newValue = current.includes(value)
           ? current.filter(v => v !== value)
           : [...current, value];
         return { ...prev, [questionId]: newValue };
@@ -267,7 +270,7 @@ const WindowReplacementGuide = () => {
     const reasons = [];
     const pricing = calculatePricing(window, userLocation, userAnswers.homeAge || 'medium');
     const budget = userAnswers.budget;
-    
+
     if (budget === 'budget' && pricing.total < 1000) {
       reasons.push(`Excellent budget value at $${pricing.total} total cost`);
     } else if (budget === 'mid' && pricing.total >= 800 && pricing.total <= 1500) {
@@ -299,32 +302,32 @@ const WindowReplacementGuide = () => {
 
   const processAIChatMessage = (message) => {
     const lowerMessage = message.toLowerCase();
-    
+
     if (lowerMessage.includes('cost') || lowerMessage.includes('price')) {
       return 'Window costs vary by material:\n• Vinyl: $300-800 + installation\n• Fiberglass: $600-1,200 + installation\n• Wood: $800-2,000+ + installation\n\nYour location affects pricing due to labor costs and regulations.';
     }
-    
+
     if (lowerMessage.includes('energy')) {
       return 'Energy efficiency key factors:\n• U-Factor: Lower is better (0.15-0.30)\n• SHGC: Lower for hot climates\n• Triple-pane glass: 50% more efficient\n• Low-E coatings: 10-25% energy savings';
     }
-    
+
     if (lowerMessage.includes('material')) {
       return 'Material comparison:\n• Fiberglass: Best durability, paintable, 50+ years\n• Vinyl: Most affordable, low maintenance, 20-30 years\n• Wood: Beautiful, customizable, requires maintenance\n• Aluminum: Modern look, poor insulation';
     }
-    
+
     return 'I can help with window costs, energy efficiency, materials, brands, and installation. What would you like to know?';
   };
 
   const sendChatMessage = () => {
     if (!chatMessage.trim()) return;
-    
+
     setChatHistory(prev => [...prev, { type: 'user', text: chatMessage }]);
-    
+
     setTimeout(() => {
       const response = processAIChatMessage(chatMessage);
       setChatHistory(prev => [...prev, { type: 'ai', text: response }]);
     }, 1000);
-    
+
     setChatMessage('');
   };
 
@@ -387,9 +390,9 @@ const WindowReplacementGuide = () => {
       const reasons = generateExplanation(window, userAnswers);
       const installReqs = installationRequirements.homeAge[userAnswers?.homeAge || 'medium'];
 
-      return { 
-        ...window, 
-        score, 
+      return {
+        ...window,
+        score,
         reasons,
         pricing,
         installationRequirements: installReqs,
@@ -421,8 +424,7 @@ const WindowReplacementGuide = () => {
           <p className="text-lg text-gray-600">Based on {windowDatabase.length} windows in our database</p>
           <div className="mt-4 p-4 bg-blue-50 rounded-lg">
             <p className="text-sm text-blue-800">
-              <lucidei.MapPin className="inline w-4 h-4 mr-1" />
-              Location: {userLocation || 'Location detection in progress'} 
+              <span>[Map]</span> Location: {userLocation || 'Location detection in progress'}
               {climateZone && ` • Climate Zone: ${climateZone}`}
             </p>
             {userAnswers.windowTypes && (
@@ -437,7 +439,7 @@ const WindowReplacementGuide = () => {
           <div className="text-center p-8">
             <p className="text-gray-600">No windows match your criteria. Please adjust your selections.</p>
             <button
-              onClick={() => {setShowRecommendations(false); setCurrentStep(0);}}
+              onClick={() => { setShowRecommendations(false); setCurrentStep(0); }}
               className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
             >
               Modify Criteria
@@ -454,7 +456,7 @@ const WindowReplacementGuide = () => {
                         #{index + 1} Recommended
                       </span>
                       <div className="flex items-center">
-                        <lucidei.Star className="w-5 h-5 text-yellow-400 fill-current" />
+                        <span>★</span>
                         <span className="text-lg font-semibold ml-1">{value.customerRating}</span>
                       </div>
                     </div>
@@ -463,8 +465,8 @@ const WindowReplacementGuide = () => {
                   </div>
                   <div className="text-right">
                     <p className="text-2xl font-bold text-green-600">${value.pricing.window}</p>
-                    <p className="text-sm text-gray-500">+ ${pricing.installation} installation</p>
-                    <p className="text-lg font-semibold text-gray-800">Total: value.pricing.total}</p>
+                    <p className="text-sm text-gray-500">+ ${value.pricing.installation} installation</p>
+                    <p className="text-lg font-semibold text-gray-800">Total: ${value.pricing.total}</p>
                   </div>
                 </div>
 
@@ -473,326 +475,325 @@ const WindowReplacementGuide = () => {
                   <ul className="space-y-2">
                     {value.reasons.map((reason, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <lucidei.CheckCircle className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0">
-                          <span className="text-gray-700">{reason}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                        <span>✔</span>
+                        <span className="text-gray-700">{reason}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
+                <button
+                  onClick={() => setExpandedRec(expandedRec === value.id ? null : value.id)}
+                  className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+                >
+                  {expandedRec === value.id ? 'Hide Details' : 'Show Details'}
+                  {expandedRec === value.id ? <span>↑</span> : <span>↓</span>}
+                </button>
+
+                {expandedRec === value.id && (
+                  <div className="mt-4 pt-4 border-t border-gray-200">
+                    <div className="grid md:grid-cols-2 gap-6">
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-2">Technical Specs</h5>
+                        <ul className="space-y-1 text-sm">
+                          <li>Glass: {value.glassType}</li>
+                          <li>U-Factor: {value.uFactor}</li>
+                          <li>SHGC: {value.shgc}</li>
+                          <li>Warranty: {value.warrantyYears} years</li>
+                          <li>Energy Rating: {value.energyRating}</li>
+                        </ul>
+                      </div>
+                      <div>
+                        <h5 className="font-semibold text-gray-900 mb-2">Installation Info</h5>
+                        <ul className="space-y-1 text-sm">
+                          <li>Method: {value.installationRequirements.method}</li>
+                          <li>Timeline: {value.installationRequirements.timeframe}</li>
+                          <li>Permits: {value.installationRequirements.permits}</li>
+                        </ul>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+
+            <div className="mt-8 text-center">
+              <button
+                onClick={() => { setShowRecommendations(false); setCurrentStep(0); }}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
+              >
+                Start Over
+              </button>
+            </div>
+
+            <div className="fixed bottom-4 right-4 z-50">
+              <div className={`bg-white border rounded-lg shadow-xl transition-all ${chatOpen ? 'w-96 h-96' : 'w-16 h-16'}`}>
+                {!chatOpen ? (
                   <button
-                    onClick={() => setExpandedRec(expandedRec === value.id ? null : value.id)}
-                    className="flex items-center gap-2 text-blue-600 hover:text-blue-800 font-medium"
+                    onClick={() => setChatOpen(true)}
+                    className="w-full h-full bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
                   >
-                    {expandedRec === value.id ? 'Hide Details' : 'Show Details'}
-                    {expandedRec === value.id ? <lucidei.ChevronUp className="w-4 h-4" /> : <lucidei.ChevronDown className="w-4 h-4" />}
+                    <span>[Chat]</span>
                   </button>
-
-                  {expandedRec === value.id && (
-                    <div className="mt-4 pt-4 border-t border-gray-200">
-                      <div className="grid md:grid-cols-2 gap-6">
-                        <div>
-                          <h5 className="font-semibold text-gray-900 mb-2">Technical Specs</h5>
-                          <ul className="space-y-1 text-sm">
-                            <ul>
-                              <li>Glass: {value.glassType}</li>
-                              <li>U-Factor: {value.uFactor}</li>
-                              <li>SHGC: {value.shgc}</li>
-                              <li>Warranty: {value.warrantyYears} years</li>
-                              <li>Energy Rating: {value.energyRating}</li>
-                            </ul>
-                          </div>
-                          <div>
-                            <h5 className="font-semibold text-gray-900 mb-2">Installation Info</h5>
-                            <ul className="space-y-1 text-sm">
-                              <li>Method: {value.installationRequirements.method}</li>
-                              <li>Timeline: {value.installationRequirements.timeframe}</li>
-                              <li>Permits: {value.installationRequirements.permits}</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ))}
-
-              <div className="mt-8 text-center">
-                <button
-                  onClick={() => {setShowRecommendations(false); setCurrentStep(0);}}
-                  className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-                >
-                  Start Over
-                </button>
-              </div>
-
-              <div className="fixed bottom-4 right-4 z-50">
-                <div className={`bg-white border rounded-lg shadow-xl transition-all ${chatOpen ? 'w-96 h-96' : 'w-16 h-16'}`}>
-                  <div className={`bg-white border rounded-lg shadow-xl transition-all ${chatOpen ? 'w-96 h-96' : 'w-16 h-16'}`}>
-                    {!chatOpen ? (
-                      <button
-                        onClick={() => setChatOpen(true)}
-                        className="w-full h-full bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
-                      >
-                        <lucidei.MessageCircle className="w-6 h-6" />
-                      </button>
-                    ) : (
-                      <div className="flex flex-col h-full">
-                        <div className="flex justify-between items-center p-3 border-b">
-                          <h3 className="font-semibold">Window Expert</h3>
-                          <button onClick={() => setChatOpen(false)} className="text-gray-400">×</button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                          {chatHistory.length === 0 && (
-                            <div className="text-gray-500 text-sm">Ask me about windows!</div>
-                          )}
-                          {chatHistory.map((msg, i) => (
-                            <div key={i} className={`p-2 rounded text-sm ${msg.type === 'user' ? 'bg-blue-100 ml-4' : 'bg-gray-100 mr-4'}`}>
-                              {msg.text}
-                            </div>
-                          ))}
-                        </div>
-                        <div className="p-3 border-t">
-                          <div className="flex gap-2">
-                            <input
-                              type="text"
-                              value={chatMessage}
-                              onChange={(e) => setChatMessage(e.target.value)}
-                              onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                              placeholder="Ask about windows..."
-                              className="flex-1 px-3 py-2 border rounded text-sm"
-                            />
-                            <button
-                              onClick={sendChatMessage}
-                              className="bg-blue-600 text-white px-3 py-2 rounded"
-                            >
-                              Send
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            ))};
-          </div>
-        ))};
-
-      const currentQuestion = questions[currentStep];
-      const isAnswered = currentQuestion.type === 'location' ? 
-        (userLocation && userLocation.includes(',') && climateZone) :
-        userAnswers[currentQuestion.id];
-      const canProceed = currentQuestion.type === 'location' ?
-        (userLocation && userLocation.includes(',') && climateZone) :
-        currentQuestion.type === 'checkbox' ? 
-          (userAnswers[currentQuestion.id] && userAnswers[currentQuestion.id].length > 0) : 
-          isAnswered;
-
-      return (
-        <div className="max-w-4xl mx-auto p-6 bg-white min-h-screen">
-          <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900 mb-4">Expert Window Replacement Guide</h1>
-            <p className="text-lg text-gray-600 mb-6">
-              Get personalized recommendations from our database of {windowDatabase.length}+ windows
-            </p>
-            <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
-              <lucidei.MapPin className="w-4 h-4" />
-              <span>
-                {userLocation ? `Optimized for ${userLocation}` : 'Detecting your location...'}
-                {climateZone && ` • Climate Zone ${climateZone}`}
-              </span>
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Progress</span>
-              <span className="text-sm text-gray-600">{currentStep + 1} of {questions.length}</span>
-            </div>
-            <div className="w-full bg-gray-200 rounded-full h-2">
-              <div
-                className="bg-blue-600 h-2 rounded-full transition-all duration-300"
-                style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
-              ></div>
-            </div>
-          </div>
-
-          <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-lg mb-6">
-            <div className="flex items-start gap-4 mb-6">
-              <div className="bg-blue-100 p-3 rounded-full">
-                {currentStep === 0 && <lucidei.MapPin className="w-6 h-6 text-blue-600" />}
-                {currentStep === 1 && <lucidei.DollarSign className="w-6 h-6 text-blue-600" />}
-                {currentStep === 2 && <lucidei.Star className="w-6 h-6 text-blue-600" />}
-                {currentStep === 3 && <lucidei.Home className="w-6 h-6 text-blue-600" />}
-                {currentStep === 4 && <lucidei.Settings className="w-6 h-6 text-blue-600" />}
-              </div>
-              <div className="flex-1">
-                <h2 className="text-2xl font-bold text-gray-900 mb-3">{currentQuestion.title}</h2>
-                <div className="bg-blue-50 p-4 rounded-lg mb-6">
-                  <div className="flex items-start gap-2">
-                    <lucidei.Info className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                    <p className="text-blue-800 text-sm">{currentQuestion.explanation}</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {currentQuestion.type === 'location' ? (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Enter your city and state (e.g., "Seattle, WA")
-                  </label>
-                  <input
-                    type="text"
-                    value={userLocation}
-                    onChange={(e) => {
-                      const newLocation = e.target.value;
-                      setUserLocation(newLocation);
-                      if (newLocation.includes(',') && newLocation.split(',').length === 2) {
-                        updateLocation(newLocation.trim());
-                      }
-                    }}
-                    placeholder="Enter your location..."
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                  {userLocation && climateZone && (
-                    <div className="mt-3 p-3 bg-green-50 rounded-lg">
-                      <p className="text-sm text-green-800">
-                        ✓ Detected Climate Zone: {climateZone} - {climateZones[userLocation.split(', ')[1]]?.description}
-                      </p>
-                      <p className="text-xs text-green-600 mt-1">
-                        Climate needs automatically determined based on your location
-                      </p>
+                ) : (
+                  <div className="flex flex-col h-full">
+                    <div className="flex justify-between items-center p-3 border-b">
+                      <h3 className="font-semibold">Window Expert</h3>
+                      <button onClick={() => setChatOpen(false)} className="text-gray-400">×</button>
                     </div>
-                  )}
-                </div>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {currentQuestion.options.map((option) => (
-                  <label
-                    key={option.value}
-                    className={`block p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
-                      currentQuestion.type === 'checkbox'
-                        ? (userAnswers[currentQuestion.id] || []).includes(option.value)
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200'
-                        : userAnswers[currentQuestion.id] === option.value
-                        ? 'border-blue-500 bg-blue-50'
-                        : 'border-gray-200'
-                    }`}
-                  >
-                    <div className="flex items-start gap-3">
-                      <input
-                        type={currentQuestion.type === 'checkbox' ? 'checkbox' : 'radio'}
-                        name={currentQuestion.id}
-                        value={option.value}
-                        checked={
-                          currentQuestion.type === 'checkbox'
-                            ? (userAnswers[currentQuestion.id] || []).includes(option.value)
-                            : userAnswers[currentQuestion.id] === option.value
-                        }
-                        onChange={() => handleAnswer(currentQuestion.id, option.value)}
-                        className="mt-1"
-                      />
-                      <div className="flex-1">
-                        <div className="font-semibold text-gray-900">{option.label}</div>
-                        <div className="text-sm text-gray-600">{option.desc}</div>
+                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                      {chatHistory.length === 0 && (
+                        <div className="text-gray-500 text-sm">Ask me about windows!</div>
+                      )}
+                      {chatHistory.map((msg, i) => (
+                        <div key={i} className={`p-2 rounded text-sm ${msg.type === 'user' ? 'bg-blue-100 ml-4' : 'bg-gray-100 mr-4'}`}>
+                          {msg.text}
+                        </div>
+                      ))}
+                    </div>
+                    <div className="p-3 border-t">
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          value={chatMessage}
+                          onChange={(e) => setChatMessage(e.target.value)}
+                          onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                          placeholder="Ask about windows..."
+                          className="flex-1 px-3 py-2 border rounded text-sm"
+                        />
+                        <button
+                          onClick={sendChatMessage}
+                          className="bg-blue-600 text-white px-3 py-2 rounded"
+                        >
+                          Send
+                        </button>
                       </div>
                     </div>
-                  </label>
-                ))}
+                  </div>
+                )}
               </div>
-            )}
-
-            {currentQuestion.type === 'checkbox' && (
-              <p className="text-sm text-gray-500 mt-4">
-                Select all that apply. You can choose multiple options.
-              </p>
-            )}
-          </div>
-
-          <div className="flex justify-between items-center">
-            <button
-              onClick={prevStep}
-              disabled={currentStep === 0}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors ${
-                currentStep === 0
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-              }`}
-            >
-              Previous
-            </button>
-
-            <div className="text-sm text-gray-500">
-              {canProceed ? '✓ Question answered' : 'Please select an option to continue'}
             </div>
-
-            <button
-              onClick={nextStep}
-              disabled={!canProceed}
-              className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
-                !canProceed
-                  ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-blue-600 text-white hover:bg-blue-700'
-              }`}
-            >
-              {currentStep === questions.length - 1 ? 'Get Recommendations' : 'Next'}
-              <lucidei.ArrowRight className="w-4 h-4" />
-            </button>
           </div>
+        )}
+      </div>
+    );
+  }
 
-          <div className="fixed bottom-4 right-4 z-50">
-            <div className={`bg-white border rounded-lg shadow-xl transition-all ${chatOpen ? 'w-96 h-96' : 'w-16 h-16'}`}>
-              {!chatOpen ? (
-                <button
-                  onClick={() => setChatOpen(true)}
-                  className="w-full h-full bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
-                >
-                  <lucidei.MessageCircle className="w-6 h-6" />
-                </button>
-              ) : (
-                <div className="flex flex-col h-full">
-                  <div className="flex justify-between items-center p-3 border-b">
-                    <h3 className="font-semibold">Window Expert</h3>
-                    <button onClick={() => setChatOpen(false)} className="text-gray-400">×</button>
-                  </div>
-                  <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                    {chatHistory.length === 0 && (
-                      <div className="text-gray-500 text-sm">Ask me about windows!</div>
-                    )}
-                    {chatHistory.map((msg, i) => (
-                      <div key={i} className={`p-2 rounded text-sm ${msg.type === 'user' ? 'bg-blue-100 ml-4' : 'bg-gray-100 mr-4'}`}>
-                        {msg.text}
-                      </div>
-                    ))}
-                  </div>
-                  <div className="p-3 border-t">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={chatMessage}
-                        onChange={(e) => setChatMessage(e.target.value)}
-                        onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
-                        placeholder="Ask about windows..."
-                        className="flex-1 px-3 py-2 border rounded text-sm"
-                      />
-                      <button
-                        onClick={sendChatMessage}
-                        className="bg-blue-600 text-white px-3 py-2 rounded"
-                      >
-                        Send
-                      </button>
-                    </div>
-                  </div>
+  const currentQuestion = questions[currentStep];
+  const isAnswered = currentQuestion.type === 'location' ?
+    (userLocation && userLocation.includes(',') && climateZone) :
+    userAnswers[currentQuestion.id];
+  const canProceed = currentQuestion.type === 'location' ?
+    (userLocation && userLocation.includes(',') && climateZone) :
+    currentQuestion.type === 'checkbox' ?
+      (userAnswers[currentQuestion.id] && userAnswers[currentQuestion.id].length > 0) :
+      isAnswered;
+
+  return (
+    <div className="max-w-4xl mx-auto p-6 bg-white min-h-screen">
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">Expert Window Replacement Guide</h1>
+        <p className="text-lg text-gray-600 mb-6">
+          Get personalized recommendations from our database of {windowDatabase.length}+ windows
+        </p>
+        <div className="flex items-center justify-center gap-2 text-sm text-gray-500">
+          <span>[Map]</span>
+          <span>
+            {userLocation ? `Optimized for ${userLocation}` : 'Detecting your location...'}
+            {climateZone && ` • Climate Zone ${climateZone}`}
+          </span>
+        </div>
+      </div>
+
+      <div className="mb-8">
+        <div className="flex justify-between items-center mb-2">
+          <span className="text-sm text-gray-600">Progress</span>
+          <span className="text-sm text-gray-600">{currentStep + 1} of {questions.length}</span>
+        </div>
+        <div className="w-full bg-gray-200 rounded-full h-2">
+          <div
+            className="bg-blue-600 h-2 rounded-full transition-all duration-300"
+            style={{ width: `${((currentStep + 1) / questions.length) * 100}%` }}
+          ></div>
+        </div>
+      </div>
+
+      <div className="bg-white border border-gray-200 rounded-lg p-8 shadow-lg mb-6">
+        <div className="flex items-start gap-4 mb-6">
+          <div className="bg-blue-100 p-3 rounded-full">
+            {currentStep === 0 && <span>[Map]</span>}
+            {currentStep === 1 && <span>[$]</span>}
+            {currentStep === 2 && <span>★</span>}
+            {currentStep === 3 && <span>[Home]</span>}
+            {currentStep === 4 && <span>[Settings]</span>}
+          </div>
+          <div className="flex-1">
+            <h2 className="text-2xl font-bold text-gray-900 mb-3">{currentQuestion.title}</h2>
+            <div className="bg-blue-50 p-4 rounded-lg mb-6">
+              <div className="flex items-start gap-2">
+                <span>[Info]</span>
+                <p className="text-blue-800 text-sm">{currentQuestion.explanation}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {currentQuestion.type === 'location' ? (
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Enter your city and state (e.g., "Seattle, WA")
+              </label>
+              <input
+                type="text"
+                value={userLocation}
+                onChange={(e) => {
+                  const newLocation = e.target.value;
+                  setUserLocation(newLocation);
+                  if (newLocation.includes(',') && newLocation.split(',').length === 2) {
+                    updateLocation(newLocation.trim());
+                  }
+                }}
+                placeholder="Enter your location..."
+                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+              {userLocation && climateZone && (
+                <div className="mt-3 p-3 bg-green-50 rounded-lg">
+                  <p className="text-sm text-green-800">
+                    ✓ Detected Climate Zone: {climateZone} - {climateZones[userLocation.split(', ')[1]]?.description}
+                  </p>
+                  <p className="text-xs text-green-600 mt-1">
+                    Climate needs automatically determined based on your location
+                  </p>
                 </div>
               )}
             </div>
           </div>
-        </div>
-      );
-    };
+        ) : (
+          <div className="space-y-3">
+            {currentQuestion.options.map((option) => (
+              <label
+                key={option.value}
+                className={`block p-4 border-2 rounded-lg cursor-pointer transition-all hover:bg-gray-50 ${
+                  currentQuestion.type === 'checkbox'
+                    ? (userAnswers[currentQuestion.id] || []).includes(option.value)
+                      ? 'border-blue-500 bg-blue-50'
+                      : 'border-gray-200'
+                    : userAnswers[currentQuestion.id] === option.value
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200'
+                }`}
+              >
+                <div className="flex items-start gap-3">
+                  <input
+                    type={currentQuestion.type === 'checkbox' ? 'checkbox' : 'radio'}
+                    name={currentQuestion.id}
+                    value={option.value}
+                    checked={
+                      currentQuestion.type === 'checkbox'
+                        ? (userAnswers[currentQuestion.id] || []).includes(option.value)
+                        : userAnswers[currentQuestion.id] === option.value
+                    }
+                    onChange={() => handleAnswer(currentQuestion.id, option.value)}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="font-semibold text-gray-900">{option.label}</div>
+                    <div className="text-sm text-gray-600">{option.desc}</div>
+                  </div>
+                </div>
+              </label>
+            ))}
+          </div>
+        )}
 
-    ReactDOM.render(<WindowReplacementGuide />, document.getElementById('root'));
+        {currentQuestion.type === 'checkbox' && (
+          <p className="text-sm text-gray-500 mt-4">
+            Select all that apply. You can choose multiple options.
+          </p>
+        )}
+      </div>
+
+      <div className="flex justify-between items-center">
+        <button
+          onClick={prevStep}
+          disabled={currentStep === 0}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors ${
+            currentStep === 0
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+          }`}
+        >
+          Previous
+        </button>
+
+        <div className="text-sm text-gray-500">
+          {canProceed ? '✓ Question answered' : 'Please select an option to continue'}
+        </div>
+
+        <button
+          onClick={nextStep}
+          disabled={!canProceed}
+          className={`px-6 py-3 rounded-lg font-medium transition-colors flex items-center gap-2 ${
+            !canProceed
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-blue-600 text-white hover:bg-blue-700'
+          }`}
+        >
+          {currentStep === questions.length - 1 ? 'Get Recommendations' : 'Next'}
+          <span>→</span>
+        </button>
+      </div>
+
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className={`bg-white border rounded-lg shadow-xl transition-all ${chatOpen ? 'w-96 h-96' : 'w-16 h-16'}`}>
+          {!chatOpen ? (
+            <button
+              onClick={() => setChatOpen(true)}
+              className="w-full h-full bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center justify-center"
+            >
+              <span>[Chat]</span>
+            </button>
+          ) : (
+            <div className="flex flex-col h-full">
+              <div className="flex justify-between items-center p-3 border-b">
+                <h3 className="font-semibold">Window Expert</h3>
+                <button onClick={() => setChatOpen(false)} className="text-gray-400">×</button>
+              </div>
+              <div className="flex-1 overflow-y-auto p-3 space-y-2">
+                {chatHistory.length === 0 && (
+                  <div className="text-gray-500 text-sm">Ask me about windows!</div>
+                )}
+                {chatHistory.map((msg, i) => (
+                  <div key={i} className={`p-2 rounded text-sm ${msg.type === 'user' ? 'bg-blue-100 ml-4' : 'bg-gray-100 mr-4'}`}>
+                    {msg.text}
+                  </div>
+                ))}
+              </div>
+              <div className="p-3 border-t">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={chatMessage}
+                    onChange={(e) => setChatMessage(e.target.value)}
+                    onKeyPress={(e) => e.key === 'Enter' && sendChatMessage()}
+                    placeholder="Ask about windows..."
+                    className="flex-1 px-3 py-2 border rounded text-sm"
+                  />
+                  <button
+                    onClick={sendChatMessage}
+                    className="bg-blue-600 text-white px-3 py-2 rounded"
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<WindowReplacementGuide />, document.getElementById('root'));
