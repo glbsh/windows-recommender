@@ -1,5 +1,5 @@
 // script.js
-// Enhanced interactive wizard UI fully wired to live dataset and styled display.
+// Fully updated to handle multi-select, zip auto-detection, composite frames, and complete interactive logic
 
 let models = [];
 let sortDirections = {};
@@ -145,8 +145,8 @@ async function loadCSVData() {
 function applyFilters(models, criteria = {}) {
   return models.filter(m => {
     return (!criteria.energyStar || m.energyStar === true) &&
-           (!criteria.frame || m.frame === criteria.frame) &&
-           (!criteria.style || m.style === criteria.style) &&
+           (!criteria.frame.length || criteria.frame.includes(m.frame)) &&
+           (!criteria.style.length || criteria.style.includes(m.style)) &&
            (!criteria.budget || m.budget === criteria.budget) &&
            (!criteria.climate || m.climate === criteria.climate);
   });
@@ -155,8 +155,8 @@ function applyFilters(models, criteria = {}) {
 function handleUserSelection() {
   const criteria = {
     energyStar: document.getElementById("q1-energyStar-yes")?.checked,
-    frame: document.querySelector("input[name='q2-frame']:checked")?.value,
-    style: document.querySelector("input[name='q3-style']:checked")?.value,
+    frame: Array.from(document.querySelectorAll("input[name='q2-frame']:checked")).map(e => e.value),
+    style: Array.from(document.querySelectorAll("input[name='q3-style']:checked")).map(e => e.value),
     budget: document.querySelector("input[name='q4-budget']:checked")?.value,
     climate: document.querySelector("input[name='q5-climate']:checked")?.value
   };
@@ -165,7 +165,7 @@ function handleUserSelection() {
   if (progress) progress.style.display = "block";
 
   setTimeout(() => {
-    if (!criteria.frame || !criteria.style || !criteria.budget || !criteria.climate) {
+    if (!criteria.frame.length || !criteria.style.length || !criteria.budget || !criteria.climate) {
       alert("Please answer all questions before proceeding.");
       if (progress) progress.style.display = "none";
       return;
@@ -183,9 +183,18 @@ window.onload = async () => {
     const nextButton = document.getElementById("submit-btn");
     nextButton.onclick = handleUserSelection;
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
+      navigator.geolocation.getCurrentPosition(async pos => {
         const zipField = document.getElementById("zip-code");
-        if (zipField) zipField.placeholder = `Auto-detected: Lat ${pos.coords.latitude.toFixed(2)}`;
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        try {
+          const res = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`);
+          const data = await res.json();
+          const zip = data.address.postcode;
+          if (zipField && zip) zipField.value = zip;
+        } catch {
+          if (zipField) zipField.placeholder = `Lat ${lat.toFixed(2)}`;
+        }
       });
     }
   } catch (e) {
