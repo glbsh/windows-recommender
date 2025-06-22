@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/window-guide-app/static/css/main.ab102e3c.css",
+    "main.js": "/window-guide-app/static/js/main.ad8c3089.js",
+    "index.html": "/window-guide-app/index.html",
+    "main.ab102e3c.css.map": "/window-guide-app/static/css/main.ab102e3c.css.map",
+    "main.ad8c3089.js.map": "/window-guide-app/static/js/main.ad8c3089.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.ab102e3c.css",
+    "static/js/main.ad8c3089.js"
+  ]
+}
