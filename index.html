@@ -2,10 +2,113 @@
 <html>
 <head>
   <title>Window Selector</title>
-  <script type="module" src="script.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <script defer src="script.js"></script>
+  <style>
+    body { font-family: sans-serif; margin: 2rem; }
+    table { border-collapse: collapse; width: 100%; margin-top: 1rem; }
+    th, td { border: 1px solid #ccc; padding: 0.5rem; text-align: left; }
+    th { background-color: #eee; }
+    input, button { margin-right: 0.5rem; padding: 0.4rem; }
+  </style>
 </head>
 <body>
   <h1>Smart Window Selector</h1>
-  <div id="app"></div>
+  <div id="app">Loading...</div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      Papa.parse("verified_window_models.csv", {
+        header: true,
+        download: true,
+        complete: function(results) {
+          const verifiedData = results.data.filter(r => r.Brand && r.Series && r.Model);
+
+          const windowDatabase = verifiedData.map(row => ({
+            brand: row.Brand,
+            series: row.Series,
+            model: row.Model,
+            frame: row.Frame?.toLowerCase(),
+            style: row.Styles?.split(',').map(s => s.trim().toLowerCase()) || [],
+            climates: ["cold", "hot", "rainy", "mixed"],
+            features: ["energy"].concat(row.STC >= 33 ? ["sound"] : []).concat(row.Warranty?.toLowerCase().includes("life") ? ["warranty"] : []),
+            uFactor: parseFloat(row["U-Factor"]),
+            stc: parseInt(row.STC),
+            warranty: row.Warranty
+          }));
+
+          function getRecommendations(answers) {
+            const climate = answers.autoClimate || answers.climate;
+            return windowDatabase
+              .filter(w => w.climates.includes(climate))
+              .filter(w => w.style.includes(answers.style) || answers.style === 'any')
+              .filter(w => answers.material === 'recommend' || w.frame === answers.material)
+              .filter(w => answers.budget === 'any' || w.tier === answers.budget)
+              .filter(w => answers.features.every(f => w.features.includes(f)))
+              .sort((a, b) => b.stc - a.stc)
+              .slice(0, 5);
+          }
+
+          function renderComparisonTable(models) {
+            const container = document.createElement('div');
+            const filter = document.createElement('input');
+            filter.placeholder = "Search brand or frame...";
+            filter.oninput = () => {
+              const rows = container.querySelectorAll("tbody tr");
+              rows.forEach(row => {
+                row.style.display = row.textContent.toLowerCase().includes(filter.value.toLowerCase()) ? "" : "none";
+              });
+            };
+            container.appendChild(filter);
+
+            const table = document.createElement('table');
+            table.innerHTML = `
+              <thead>
+                <tr>
+                  <th>Brand</th>
+                  <th>Series</th>
+                  <th>Model</th>
+                  <th>Frame</th>
+                  <th>Styles</th>
+                  <th>U-Factor</th>
+                  <th>STC</th>
+                  <th>Warranty</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${models.map(m => `
+                  <tr>
+                    <td>${m.brand}</td>
+                    <td>${m.series}</td>
+                    <td>${m.model}</td>
+                    <td>${m.frame}</td>
+                    <td>${m.style.join(", ")}</td>
+                    <td>${m.uFactor}</td>
+                    <td>${m.stc}</td>
+                    <td>${m.warranty}</td>
+                  </tr>`).join('')}
+              </tbody>
+            `;
+            container.appendChild(table);
+            return container;
+          }
+
+          const sampleAnswers = {
+            climate: "cold",
+            style: "casement",
+            material: "fiberglass",
+            budget: "any",
+            features: ["energy", "sound"]
+          };
+
+          const models = getRecommendations(sampleAnswers);
+          const ui = renderComparisonTable(models);
+          const app = document.getElementById("app");
+          app.innerHTML = "";
+          app.appendChild(ui);
+        }
+      });
+    });
+  </script>
 </body>
 </html>
