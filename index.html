@@ -1,51 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Window Replacement Recommender</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <title>Window Replacement Finder</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
-  <h1>🔍 Window Replacement Recommender</h1>
-
   <div id="wizard">
-    <p><strong>1. Do you want Energy Star certified windows?</strong></p>
-    <label><input type="radio" name="q1-energyStar" id="q1-energyStar-yes" /> Yes</label>
-    <label><input type="radio" name="q1-energyStar" /> No preference</label>
+    <h1>Find the Perfect Window</h1>
 
-    <p><strong>2. Preferred Frame Material:</strong></p>
-    <label><input type="radio" name="q2-frame" value="Vinyl" /> Vinyl</label>
-    <label><input type="radio" name="q2-frame" value="Fiberglass" /> Fiberglass</label>
-    <label><input type="radio" name="q2-frame" value="Wood" /> Wood</label>
-    <label><input type="radio" name="q2-frame" value="Composite" /> Composite</label>
+    <div class="question">
+      <label>1. Do you want ENERGY STAR® certified windows?</label>
+      <div class="option-group">
+        <label><input type="radio" id="q1-energyStar-yes" name="q1-energyStar" value="yes"> Yes</label>
+        <label><input type="radio" name="q1-energyStar" value="no"> No</label>
+      </div>
+    </div>
 
-    <p><strong>3. Preferred Style:</strong></p>
-    <label><input type="radio" name="q3-style" value="Double-Hung" /> Double-Hung</label>
-    <label><input type="radio" name="q3-style" value="Casement" /> Casement</label>
-    <label><input type="radio" name="q3-style" value="Sliding" /> Sliding</label>
-    <label><input type="radio" name="q3-style" value="Awning" /> Awning</label>
+    <div class="question">
+      <label>2. What frame material do you prefer?</label>
+      <div class="option-group" id="q2-frame-options"></div>
+    </div>
 
-    <p><strong>4. Your Budget:</strong></p>
-    <label><input type="radio" name="q4-budget" value="Economy" /> Economy</label>
-    <label><input type="radio" name="q4-budget" value="Mid-Range" /> Mid-Range</label>
-    <label><input type="radio" name="q4-budget" value="Premium" /> Premium</label>
+    <div class="question">
+      <label>3. What window style are you looking for?</label>
+      <div class="option-group" id="q3-style-options"></div>
+    </div>
 
-    <p><strong>5. Your Climate Zone:</strong></p>
-    <label><input type="radio" name="q5-climate" value="Cold" /> Cold</label>
-    <label><input type="radio" name="q5-climate" value="Mixed" /> Mixed</label>
-    <label><input type="radio" name="q5-climate" value="Hot" /> Hot</label>
-    <label><input type="radio" name="q5-climate" value="Humid" /> Humid</label>
+    <div class="question">
+      <label>4. What's your budget?</label>
+      <div class="option-group" id="q4-budget-options"></div>
+    </div>
 
-    <p><strong>Your ZIP Code:</strong> <input type="text" id="zip-code" placeholder="ZIP code or auto-detecting..." /></p>
+    <div class="question">
+      <label>5. What’s your regional climate like?</label>
+      <div class="option-group" id="q5-climate-options"></div>
+    </div>
 
-    <button id="submit-btn">🔎 Find My Matches</button>
-    <div id="progress" style="display:none">🔄 Processing...</div>
+    <div class="question">
+      <label>ZIP Code (optional):</label>
+      <input type="text" id="zip-code" placeholder="ZIP or auto-detecting...">
+    </div>
+
+    <div id="progress" style="display:none">Finding matches...</div>
+
+    <button id="submit-btn">Find My Windows</button>
   </div>
 
   <div id="app"></div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="script.js"></script>
 </body>
 </html>
